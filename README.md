@@ -210,6 +210,12 @@ Lecture notes for courses [MIT 6.S965, Fall 2022 | MIT 6.5940, Fall 2023•2024]
 
   > PEFT Quantization: QLoRA, BitDelta
 
+- [Prompt Engineering](https://github.com/erectbranch/MIT-Efficient-AI/tree/master/2024/lec14/summary02)
+
+  > In-Context Learning: Zero-Shot Prompting, Few-Shot Prompting
+
+  > Chain-of-Thought, Retrieval Augmented Generation
+
   ---
 
 - [Vision Transformer](https://github.com/erectbranch/MIT-Efficient-AI/tree/master/2023/lec14/summary01)
