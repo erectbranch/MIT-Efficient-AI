@@ -213,7 +213,9 @@ OOM을 방지하기 위한 방법으로, window attention처럼 local token만 �
 
 논문에서는 attention sink 현상의 원인으로 softmax를 지목한다. softmax는 총합이 1이 되어야 하는데, 이를 위해 첫 번째 토큰의 score가 과도하게 커지게 된다.
 
-$$ \mathrm{Softmax} (x)_i = \frac{e^{x_i}}{e^{x_1} + \sum_{j=2}^{N}e^{x_j}}, \quad x_1 \gg x_j, j \in 2, \cdots, N $$
+```math
+\mathrm{Softmax} (x)_i = \frac{e^{x_i}}{e^{x_1} + \sum_{j=2}^{N}e^{x_j}}, \quad x_1 \gg x_j, j \in 2, \cdots, N
+```
 
 첫 번째 토큰은 이어지는 토큰에서 항상 관찰할 수 있으므로(autoregressive language modeling), 편향이 발생하는 지점이 된다.
 
