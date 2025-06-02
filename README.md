@@ -216,6 +216,12 @@ Lecture notes for courses [MIT 6.S965, Fall 2022 | MIT 6.5940, Fall 2023•2024]
 
   > Chain-of-Thought, Retrieval Augmented Generation
 
+- [Long Context LLM](https://github.com/erectbranch/MIT-Efficient-AI/tree/master/2024/lec15/summary01)
+
+  > LongLoRA(Shifted Sparse Attention), StreamingLLM(Attention Sink)
+
+  > The Lost in the Middle Phenomenon, Needle In A Haystack Analysis, LongBench
+
   ---
 
 - [Vision Transformer](https://github.com/erectbranch/MIT-Efficient-AI/tree/master/2023/lec14/summary01)
