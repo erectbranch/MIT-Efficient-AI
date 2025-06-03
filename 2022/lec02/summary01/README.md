@@ -252,6 +252,22 @@ $$ \hat{x_{i} } = \frac{1}{\sigma} (x_i - {\mu}_{i}) $$
 
 > [Attention is All You Need 논문(2017)](https://arxiv.org/abs/1706.03762)
 
-(생략)
+다음은 **transformer** 아키텍처 및 Multi-Head Attention 블록의 구조를 나타낸 도식이다. Query, Key, Value의 세 가지 텐서에 attention 연산을 수행하여 출력 텐서를 산출한다.
+
+> QKV example(YouTube Search): `Q`: 검색 창의 텍스트 프롬프트, `K`: 동영상의 제목 및 설명, `V`: 실제 동영상
+
+| Transformer | Multi-Head Attention |
+| :---: | :---: |
+| ![transformer](images/transformer.png) | ![attention basic](images/attention_1.png) |
+
+이때 **attention** 연산은 별도의 가중치를 필요로 하지 않는다.
+
+$$ \mathbf{Attention}(Q, K, V) = \text{softmax}(\frac{QK^T}{\sqrt{d_k}})V $$
+
+대체로 다양한 임베딩 차원 $d$ ( $d_{model}$ )에 안정적이기 위한 정규화를 수행하며, softmax를 거치면서 $N \times N$ 크기의 **attention map**을 획득할 수 있다. ( $N$ : sequence length )
+
+![attention](images/attention_2.png)
+
+이처럼 $N \times N$ 계산 비용을 갖는 attention map은 메모리 병목 요인에 해당한다. (토큰 수 $N$ 이 증가할수록 quadratic하게 메모리 사용량이 증가)
 
 ---

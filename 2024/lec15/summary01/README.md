@@ -10,21 +10,19 @@ LLM에서 long-context를 이해하도록 미세조정하려면, 굉장히 큰 �
 
 > [LongLoRA: Efficient Fine-tuning of Long-Context Large Language Models 논문(2023)](https://arxiv.org/abs/2309.12307)
 
-예를 들어 8192 context length로 LLM을 미세조정하려면, 2048 대비 self-attention 레이어에서 16배의 연산 비용이 필요하다.
+예를 들어 8192 context length로 LLM을 미세조정하려면, 2048 길이 대비 self-attention 연산에서 16배 비용이 든다.
 
-LongLoRA 논문은 미세조정 시 sparse local attention( $S^2$ -Attn )를 채택하는 것으로 학습 비용을 최적화한다. (추론에서는 dense global attention 사용)
+LongLoRA 논문은 미세조정 시 sparse local attention( $S^2$ -Attn )를 채택하는 것으로 학습 비용을 최적화한다. (추론 단계에서는 dense global attention를 사용한다.)
 
 ---
 
 ### 15.1.1 Shifted Sparse Attention
 
-> long-context 모델의 병목은 attention 연산이다. (token length에 따라 quadratic하게 계산 복잡도가 상승하기 때문)
-
 $S^2$ -Attn은 삼각형 영역의 특정 그룹만을 연산하는 sparse attention 기법이다. 
 
-- head 절반은 Pattern 1, 나머지 절반은 Pattern 2를 따른다. (information flow가 그룹 간 교환되도록)
+- head 절반은 Pattern 1, 나머지 절반은 Pattern 2
 
-- Pattern 2 = group size 절반 만큼 Pattern 1 shift
+  - Pattern 2 = group size 절반 만큼 Pattern 1 shift
 
 둘을 이후 결합하는 것으로 information flow를 유지한다.
 
@@ -44,7 +42,7 @@ $S^2$ -Attn은 삼각형 영역의 특정 그룹만을 연산하는 sparse atten
 
 ![LongLoRA overview 2](images/LongLoRA_overview_2.png)
 
-> 🔥: 미세조정 대상 레이어
+> 🔥: 미세조정 레이어
 
 Llama2 7B 기준으로 정규화 레이어 파라미터는 불과 0.004%를 차지한다. 그러나 Input Embedding과 함께 미세조정하는 것으로 full FT와의 격차를 크게 줄일 수 있다.
 
@@ -181,7 +179,7 @@ streaming application 환경에서는 끊임없이 챗봇과 대화할 수 있�
 
 ### 15.4.1 The Limits of Window Attention
 
-OOM을 방지하기 위한 방법으로, window attention처럼 local token만 캐싱하는 연산을 고려할 수 있다.
+OOM을 방지하기 위한 방법으로, window attention처럼 local token만 캐싱하는 방법을 생각해볼 수 있다.
 
 - (텍스트 길이 > 캐시 크기) 그러나 첫 토큰이 윈도우를 벗어나는 순간, 성능이 급격히 저하된다.
 
@@ -285,7 +283,7 @@ sliding window w. re-computation은 윈도우 내부에서 quadratic attention �
 >
 > ![streamingLLM ablation 2](images/streamingllm_ablation_2.png)
 
-실제로, 해당 토큰을 추가한 모델에서는하나의 attention sink만 유지해도 성능이 크게 저하되지 않았다.
+실제로, 해당 토큰을 추가한 모델에서는 하나의 attention sink만 유지해도 성능이 크게 저하되지 않았다.
 
 ![streamingLLM ablation 3](images/streamingllm_ablation_3.png)
 
