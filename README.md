@@ -222,6 +222,12 @@ Lecture notes for courses [MIT 6.S965, Fall 2022 | MIT 6.5940, Fall 2023•2024]
 
   > The Lost in the Middle Phenomenon, Needle In A Haystack Analysis, LongBench
 
+- [Efficient Attention, Beyond Transformers](https://github.com/erectbranch/MIT-Efficient-AI/tree/master/2024/lec15/summary02)
+
+  > DuoAttention(Retrieval, Streaming Head), Quest(Query-Aware Sparsity)
+
+  > Mamba(Selective State-Space Models), Jamba
+
   ---
 
 - [Vision Transformer](https://github.com/erectbranch/MIT-Efficient-AI/tree/master/2023/lec14/summary01)
