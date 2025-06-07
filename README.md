@@ -236,6 +236,14 @@ Lecture notes for courses [MIT 6.S965, Fall 2022 | MIT 6.5940, Fall 2023•2024]
   
   > Window Attention(Swin Transformer, FlatFormer), ReLU Linear Attention(EfficientViT, EfficientViT-SAM), Sparse Attention(SparseViT)
 
+- [ViT Training, AR Image Generation](https://github.com/erectbranch/MIT-Efficient-AI/tree/master/2023/lec14/summary02)
+
+  > Contrastive Learning(CLIP), Masked Image Modeling
+
+  > Multi-modal LLMs(Flamingo, PaLM-E)
+  
+  > Autoregressive Image Generation(VAR, HART)
+
 - [Efficient Video Understanding](https://github.com/erectbranch/MIT-Efficient-AI/tree/master/2022/lec19/summary01)
 
   > 2D CNNs for Video Understanding, 3D CNNs for Video Understanding(I3D), Temporal Shift Module(TSM)
