@@ -4,9 +4,13 @@
 
 > [EfficientML.ai Lecture 15 - GAN, Video, and Point Cloud (MIT 6.5940, Fall 2023, Zoom)](https://youtu.be/WU7tpyesm68?si=iRrWKkupS0KMkgUp)
 
-Video Understanding은 다양한 응용이 가능한 도메인이다. 주의할 점으로, 동영상은 이미지와 달리 **temporal** dimension을 갖는다. (temporal modeling)
+> [EfficientML.ai Lecture 17 - GAN, Video, Point Cloud (Zoom Recording) (MIT 6.5940, Fall 2024)](https://www.youtube.com/watch?v=g24LzAIZbTA)
 
-> action/gesture recognition, scene understanding, video search for ads, video prediction for autonomous driving
+Video understanding은 다양한 도메인에서 활용될 수 있다. 
+
+- action/gesture recognition, scene understanding, video search for ads, video prediction for autonomous driving, ...
+
+이때, 동영상은 이미지와 달리 **temporal dimension**(시간 차원)을 고려해야 한다.
 
 ![difference between image and video](images/difference_video_image.png)
 
@@ -20,27 +24,31 @@ Video Understanding은 다양한 응용이 가능한 도메인이다. 주의할 
 
 > [Long-term Recurrent Convolutional Networks for Visual Recognition and Description 논문(2014)](https://arxiv.org/abs/1411.4389)
 
-2D CNN을 활용한 대표적인 video understanding 방법을 살펴보자. 2D CNN을 사용 시, 다른 방법에 비해 연산 효율적이며, image recognition에서 사용하는 2D CNN을 재활용할 수 있다는 장점을 갖는다. 
+연구 초기 2D CNN을 활용하여, 각 동영상 프레임을 샘플링한 뒤 이미지처럼 처리하는 방법이 제안되었다.
 
-- 각 frame에 2D CNN 적용 후, class scores를 취합한다.
+- **TSN**(Temporal Segment Networks)
+  
+  - $\mathrm{TSN}(T_1, T_2, \cdots, T_K)$ : 비디오에서 $K$ 개 프레임 샘플링 후, 각자 class score 계산 (Aggregation: average, max 등)
 
-  - (-) (다른 방법에 비해) 정확도가 낮다.
+  - 단점: 낮은 정확도
 
   ![Temporal Segment Networks](images/TSN_2d_cnn.png)
 
-- spatial stream, temporal stream를 결합한다.
+- **Two-stream ConvNet**
 
-  - spatial stream conv: 단일 프레임에서 물체를 인식한다.
+  - Spatial stream(물체 인식) + Temporal stream(**optical flow** 인식)
 
-  - temporal stream conv: **optical flow**를 인식한다.
-
-  - (-) optical flow를 도출하기 위한 시간이 많이 소요된다.(모델 연산 시간보다도 더 큰 latency)
+  - 단점: optical flow 연산 속도 (모델 추론보다도 긴 지연시간 소요)
 
   ![Two-Stream CNN](images/two_stream_2d_cnn.png)
 
-- CNN의 출력(feature)에 기반한 post-fusion 모델링 (LSTM 등 사용)
+- **LRCNs** (Long-term Recurrent Convolutional Networks)
+  
+  - 2D CNN + Post-fusion(e.g., LSTM)
 
-  - (-) low-level temporal relationship을 잘 모델링하지 못한다.
+  - 단점: low-level temporal relationship을 제대로 모델링하지 못한다.
+
+  > low-level 특징은 CNN에서 추출되며, LSTM은 high-level 특징을 모델링한다.
 
   | Action Recognition | Image Captioning | Video Description |
   | :---: | :---: | :---: |
@@ -50,27 +58,25 @@ Video Understanding은 다양한 응용이 가능한 도메인이다. 주의할 
 
 ## 19.2 3D CNNs for Video Understanding
 
-> [TSM: Temporal Shift Module for Efficient Video Understanding 논문(2018)](https://arxiv.org/abs/1811.08383)
+> [Learning Spatiotemporal Features with 3D Convolutional Networks 논문(2014)](https://arxiv.org/abs/1412.0767)
 
 > [Quo Vadis, Action Recognition? A New Model and the Kinetics Dataset 논문(2017)](https://arxiv.org/abs/1705.07750)
 
-3D conv는 spatial dimentions만이 아니라, 추가로 temporal dimension까지 연산하는 방법이다. (spatiotemporal information) 
+다음은 (spatial dimension뿐만 아니라) temporal dimension를 함께 연산하는 **C3D**(Convolutional 3D)이다. (spatiotemporal information)
 
 | 2D conv on multiple frames | 3D conv |
 | :---: | :---: |
 | ![2d conv on multiple frames](images/C3D_1.png) | ![3d conv](images/C3D_2.png) |
 
-3D CNN을 활용한 대표적인 video understanding 방법으로 다음과 같은 예시가 있다.
+> $L$ : 프레임 수, $d$ : kernel temporal depth
 
-- I3D: Initialize 3D CNNs with 2D CNN weights by inflation
+그러나, 3D CNN은 보다 많은 파라미터를 갖는다.(연산 비용도 증가) **I3D**에서는 3D CNN을, 기존 2D CNN 가중치를 활용하여 초기화하는 방법을 제안했다. (e.g., ImageNet 사전학습 2D CNN)
 
-  초기화 시 (ImageNet 등 데이터셋에서) pre-trained된 2D CNN 가중치를, temporal dimension으로 확장한다.
+- 초기화 시, temporal dimension에 가중치 복제
 
-  - (-) 필요한 비용(모델 크기, 연산량 등)이 증가한다.
-
-  | Inflated Inception-V1 | Inception Module |
-  | :---: | :---: |
-  | ![inflated inception-v1](images/inflated_inception-v1.png) | ![inception module](images/inception_module.png) |
+| Inflated Inception-V1 | Inception Module |
+| :---: | :---: |
+| ![inflated inception-v1](images/inflated_inception-v1.png) | ![inception module](images/inception_module.png) |
 
 ---
 
@@ -78,51 +84,55 @@ Video Understanding은 다양한 응용이 가능한 도메인이다. 주의할 
 
 > [TSM: Temporal Shift Module for Efficient Video Understanding 논문(2018)](https://arxiv.org/abs/1811.08383): I3D family에 비해 6x 적은 연산량
 
-Temporal Shift Module(TSM)은, 3D conv 기반의 장점은 유지하며 overhead는 줄이기 위해 고안된 모듈이다.
+위 논문에서는 3D conv의 성능은 유지하되 연산 비용을 줄일 수 있는, **TSM**(Temporal Shift Module)을 제안하였다. 
 
-> 그림에서는 H, W 차원을 하나로 합쳐서, T / H,W / C 3차원 텐서로 표현한다.
+여러 frame 사이 정보를 교환하기 위해, temporal dimension $T$ 차원에서 shift를 수행한다.
 
-| original tensor w/o shift | offline temporal shift<br/>(bi-direction) | online temporal shift<br/>(uni-direction) |
+- **Bi-directional**: 인접 시간의 frame끼리 정보 교환
+
+- **Uni-directional**: 과거에서 미래로 정보 교환
+
+> 실시간 스트리밍 task: 미래 시점의 frame을 가져올 수 없으므로 한 가지 방식으로만 shift
+
+| Original tensor<br>w/o shift | Offline temporal shift<br>(bi-direction) | Online temporal shift<br>(uni-direction) |
 | :---: | :---: | :---: |
 | ![original tensor](images/TSM_1.png) | ![offline temporal shift](images/TSM_2.png) | ![online temporal shift](images/TSM_3.png) | 
 
-- **Bi-directional**
+> 공간 차원(H, W)을 하나로 합쳐서, T / H,W / C 3차원으로 표현
 
-  일부 채널을 temporal dimension $T$ 를 따라 shift하여, 근접한 시간을 갖는 frame끼리 정보가 교환될 수 있도록 만든다.
+> spatial information을 유지하기 위해 1개 채널만 shift한다. (spatial, temporal information 간의 trade-off) 
 
-- **Uni-directional**
-
-  일부 채널을 $T$ 차원을 따라 과거에서 미래 방향으로 shift하여, frame끼리 정보를 교환한다.
-
-  > 실시간 스트리밍에서는 미래 시점의 frame을 미리 가져올 수 없기 때문에, 한 방향으로만 shitt한다.
-
-이때 채널을 많이 이동시키지 않고 오직 1개만 shift하는 이유는, spatial information을 유지하기 위함이다.(spatial, temporal information 간의 trade-off) 
-
-이를 통해 multiplication, addition 등의 추가적인 연산 없이, 단순히 shift만 추가하여 temporal modeling을 구현했다. (추가적인 FLOPs, parameter가 필요하지 않다.)
+이처럼 shift 연산을 추가하는 것만으로, 보다 효율적으로 temporal modeling이 가능하다.
 
 ---
 
-### 19.3.1 TSM Implementation
+### 19.3.1 Inserting TSM into 2D CNNs
 
-다음은 offline/online 방식에 따라 구현한 TSM 모델 구조 예시다. 
+여러 프레임을 대상으로 2D Conv를 적용하면 Timestamp가 생기며, 해당 $T$ 차원에서 shift를 수행하는 방식으로 적용할 수 있다.
 
-> 그림 속 여러 frame: $T$ 차원에 해당된다.
+- **Offline** TSM models (단일 배치 단위 수행)
 
-> $T$ dimension에서는 shift만 일어날 뿐, 2D conv가 적용되지 않는다.
-
-- 공통적으로 각 frame마다 2D conv를 먼저 적용한다.
-
-- **offline** TSM models
-
-  - bypass를 추가하여 information loss를 보전한다.
+  bypass를 추가하여 information loss를 보전한다.
 
   ![offline TSM](https://github.com/erectbranch/MIT-Efficient-AI/blob/master/2022/lec19/summary01/images/TSM_offline.png)
 
-- **online** TSM models
+- **Online** TSM models (Frame-by-frame 수행)
 
-  > $F_t$ 입력일 때, 미래인 $F_{t+1}$ 에 접근할 수 없다. 오로지 메모리에 캐싱한 과거의 frame 정보를 사용한다.(shift)
+  미래인 $F_{t+1}$ 에 접근할 수 없으므로, 메모리에 캐싱한 과거 frame 정보를 사용한다.
 
   ![online TSM](https://github.com/erectbranch/MIT-Efficient-AI/blob/master/2022/lec19/summary01/images/TSM_online.png)
+
+다음은 TSM을 구현한 코드 예시다.
+
+```python
+# shape of x: [N, T, C, H, W]
+out = torch.zeros_like(x)
+fold = c // fold_div
+out[:, :-1, :fold] = x[:, 1:, :fold]    # shift left
+out[:, 1:, fold: 2 * fold] = x[:, :-1, fold: 2 * fold]   # shift right
+out[:, :, 2 * fold:] = x[:, :, 2 * fold:]   # not shift
+return out
+```
 
 ---
 
@@ -136,11 +146,9 @@ Temporal Shift Module(TSM)은, 3D conv 기반의 장점은 유지하며 overhead
 
 > [A Closer Look at Spatiotemporal Convolutions for Action Recognition 논문(2017)](https://arxiv.org/abs/1711.11248)
 
-3D CNN kernel은, 2D spatial + 1D temporal kernel로 분해할 수 있다.
+Conv3D를 2D spatial + 1D temporal kernel로 행렬을 분해할 수 있다. (보다 모델 크기가 가벼워지며 학습에 유리하다.)
 
 ![kernel decomposition](images/kernel_decomposition.png)
-
-- (+)3D 접근법에 비해, 모델 크기가 가볍고 학습이 용이하다.
 
 ---
 
@@ -148,17 +156,19 @@ Temporal Shift Module(TSM)은, 3D conv 기반의 장점은 유지하며 overhead
 
 > [SlowFast Networks for Video Recognition 논문(2018)](https://arxiv.org/abs/1812.03982)
 
-SlowFast Networks 논문에서는, large spatial resolution과 large temporal resolution 조건의 video recognition의 비용을 줄이기 위해, two-branch 디자인을 제안했다.
+위 논문에서는 효율적인 video recognition을 위한 두 가지 분기(slow, fast) 설계를 제안하였다.
 
 ![slowfast branch](images/slowfast.png)
 
-- **large** spatial resolution + **small** temporal resolution
+- **Slow pathway**(연산의 80%)
 
-  - low frame rate: $T$ 차원의 크기가 작다.
+  낮은 프레임 속도에서 공간 정보에 집중 (large spatial, small temporal)
 
-- **small** spatial resolution + **large** temporal resolution
+- **Fast pathway**(연산의 20%)
 
-  - high frame rate: $T$ 차원의 크기가 크다.
+  높은 프레임 속도에서 빠르게 변하는 motion에 집중 (small spatial, large temporal)
+
+> Fast pathway: $\alpha T$ 프레임 샘플링 ( 논문 $\alpha=8$ ), Slow pathway: Fast 대비 $\beta$ 비율 채널 샘플링 ( $\beta=1/8$ )
 
 ---
 
@@ -166,7 +176,7 @@ SlowFast Networks 논문에서는, large spatial resolution과 large temporal re
 
 > [X3D: Expanding Architectures for Efficient Video Recognition 논문(2020)](https://arxiv.org/abs/2004.04730)
 
-X3D 논문에서는, NAS의 탐색 공간에 temporal duration, frame rate, spatial resoultion 차원을 추가하여 효율적인 모델을 획득한다.
+**X3D** 논문은 탐색 공간으로 temporal duration, frame rate, spatial resoultion을 포함하는 NAS를 제안하였다.
 
 ![X3D](images/X3D.png)
 
@@ -188,11 +198,23 @@ X3D 논문에서는, NAS의 탐색 공간에 temporal duration, frame rate, spat
 
 > [SCSampler: Sampling Salient Clips from Video for Efficient Action Recognition 논문(2019)](https://arxiv.org/abs/1904.04289)
 
-긴 동영상은 보통 일부만이 중요한 정보만을 포함하게 된다. 따라서, non-salient 파트를 구분하여 제거한다면 연산량을 줄일 수 있다.
+긴 동영상에서 중요한 정보를 포함하는 일부 프레임만을 식별하면 연산을 크게 줄일 수 있다.
 
-![SCSampler](images/SCSampler.png)
+위 논문에서는 SCSampler(Salient Clip Sampler) 설계를 통해, non-salient 파트를 구분하고 제거함으로써 연산을 효과적으로 줄였다.
 
-> 이때 작은 해상도 혹은 capacity가 작은 CNN을 사용하여, 효율적으로 non-salient frame을 구분할 수 있다.
+- 입력
+
+  - 압축 비디오 데이터(I-frame, Motion Displacement, RGB-Residual) (ResNet-18 처리)
+  
+  - MEL-spectrogram 변환 오디오 데이터 (VGG 모델 처리)
+
+- Top-K 선별: 비디오 Top-K' 프레임 + 비디오 Top-K'와 중복되지 않는 오디오 Top-K'' 프레임
+ 
+| Dense prediction | SCSampler |
+| :---: | :---: |
+| ![dense pred](images/dense_sampler.png) | ![SCSampler](images/SCSampler.png) |
+
+> saliency ranking: Action Classifier의 Top-K 프레임 분류 손실을 줄이도록 학습
 
 ---
 
@@ -200,17 +222,21 @@ X3D 논문에서는, NAS의 탐색 공간에 temporal duration, frame rate, spat
 
 > [Recurrent Residual Module for Fast Inference in Videos 논문(2018)](https://arxiv.org/abs/1802.09723)
 
-동영상에서는 대체로 근접한 frame( $x_t$ , $x_{t+1}$ )에서, 매우 유사한 spatial information을 갖는다.(불과 몇 픽셀의 차이 발생)
+인접 frame( $x_t$ , $x_{t+1}$ )은 spatial information이 거의 동일한 경우가 많다. 따라서, 이러한 특성을 활용하여 중복 계산을 줄인 **RRM**(Recurrent Residual Module) 설계가 제안되었다.
 
-- conv가 갖는 linearity와 근접한 frame이 갖는 차이를 이용해, 보다 효율적인 연산이 가능하다.
+**(1)** Convolution, Fully-Connected 연산의 선형성(linearity)을 활용하여, 프레임 사이 변화( $x_{t+1} - x_{t} = \Delta$ )만을 계산한다. 
 
-  - $x_{t+1} - x_{t} = \Delta$
+- 현재 feature map은 스냅샷으로 저장, 이후 다음 프레임의 feature map과 연산
 
 $$ y_{t+1} = F(x_{t+1}) = F(x_t + x_{t+1} - x_t) = F(x_t + \Delta) $$
 
 $$ = F(x_t) + F(\Delta) = y_t + F(\Delta) $$
 
-다음은 위 연산 방법을 적용했을 때, 추론 과정을 나타낸 예시다.
+> $\Delta$ : 희소 행렬 특성을 가지므로, EIE 등 가속기를 사용해 효율적으로 연산 가능
+
+**(2)** 해당 연산 결과를 이어지는 non-linearity(Pooling, ReLU 등) 레이어에 통과시킨다.
+
+다음은 RRM을 적용한 연산 절차를 보여준다.
 
 ![RRM](images/RRM.png)
 
