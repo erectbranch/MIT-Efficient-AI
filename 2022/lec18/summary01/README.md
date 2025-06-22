@@ -126,7 +126,7 @@ $$P=\lbrace(p,f)\rbrace$$
 
   ![PointPillars](images/pointpillars.png)
 
-> $P$ : pillar 수(~10000), $N$ : 각 pillar에 속한 point의 최대 수, $D/C$ : 입/출력 채널 수(10~64)
+> $P$ : pillar 수(\~10000), $N$ : 각 pillar에 속한 point의 최대 수, $D/C$ : 입/출력 채널 수(10\~64)
 
 - **PolarNet**
 

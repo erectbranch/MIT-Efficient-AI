@@ -255,3 +255,9 @@ Lecture notes for courses [MIT 6.S965, Fall 2022 | MIT 6.5940, Fall 2023•2024]
   > GANs(Generator, Discriminator), Conditional/Unconditional GANs, Difficulties in GANs
 
   > Compress Generator(GAN Compression), Dynamic Cost GANs(Anycost GANs), Data-Efficient GANs(Differentiable Augmenatation)
+
+- [Efficient Point Cloud Recognition](https://github.com/erectbranch/MIT-Efficient-AI/tree/master/2022/lec18/summary01)
+
+  > 3D Data: Point Clouds, Multi-view Images(Range Image, BEV Projection), Voxels(Dense, Sparse), Octree
+
+  > Hybrid: Point-Voxel CNN(PVCNN, SPVConv), BEVFusion
