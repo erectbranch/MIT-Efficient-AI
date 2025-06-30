@@ -1,4 +1,4 @@
-# Lecture 15 - On-Device Training and Transfer Learning
+# Lecture 15 - On-Device Training and Transfer Learning (Part I)
 
 > [Lecture 15 - On-Device Training and Transfer Learning (Part I) | MIT 6.S965](https://youtu.be/VW_6V0k_i30)
 

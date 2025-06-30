@@ -142,6 +142,18 @@ Lecture notes for courses [MIT 6.S965, Fall 2022 | MIT 6.5940, Fall 2023•2024]
 
 ### ⚙️ Efficient Training and System Support
 
+- [On-device Training, Transfer Learning](https://github.com/erectbranch/MIT-Efficient-AI/tree/master/2022/lec15)
+
+  > Efficient Transfer Learning: TinyTL(Bias-only Fine-tuning, Lite residual module)
+
+  > Sparse Layer/Tensor Update(Contribution Analysis), Real Quantized Training
+
+- [Tiny Training Engine](https://github.com/erectbranch/MIT-Efficient-AI/tree/master/2022/lec16/summary01/)
+
+  > Intermediate Representation(IR), Compile-Time Autodiff
+
+  > Graph-level Optimization(Sparse Update, Operation Reordering)
+
 - [Microcontroller, Loop Optimization](https://github.com/erectbranch/MIT-Efficient-AI/tree/master/2022/lec17/summary01)
 
   > Memory Hierarchy of Microcontroller, Primary Memory Format(NCHW, NHWC, CHWN)
