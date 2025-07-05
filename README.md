@@ -154,6 +154,12 @@ Lecture notes for courses [MIT 6.S965, Fall 2022 | MIT 6.5940, Fall 2023•2024]
 
   > Graph-level Optimization(Sparse Update, Operation Reordering)
 
+- [Compilers, Graph-level Optimization](https://github.com/erectbranch/MIT-Efficient-AI/tree/master/2022/lec16/summary02/)
+
+  > Compilers: Halide, TVM, AutoTVM
+
+  > Graph-level Optimization Framework: MetaFlow, IOS
+
 - [Microcontroller, Loop Optimization](https://github.com/erectbranch/MIT-Efficient-AI/tree/master/2022/lec17/summary01)
 
   > Memory Hierarchy of Microcontroller, Primary Memory Format(NCHW, NHWC, CHWN)

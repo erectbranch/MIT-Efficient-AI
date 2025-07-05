@@ -34,15 +34,15 @@
 
 ```cpp
 void blur(const Image &in , Image &blurred) {
-    Image tmp(in.width(), in.height());
+  Image tmp(in.width(), in.height());
 
-    for (int y = 0; y < in.height(); y++) 
-        for (int x = 0; x < in.width(); x++) 
-            tmp(x, y) = (in(x-1, y) + in(x, y) + in(x+1, y))/3;
+  for (int y = 0; y < in.height(); y++) 
+    for (int x = 0; x < in.width(); x++) 
+      tmp(x, y) = (in(x-1, y)+in(x, y)+in(x+1, y))/3;
 
-    for (int y = 0; y < in.height(); y++) 
-        for (int x = 0; x < in.width(); x++) 
-            blurred(x, y) = (tmp(x, y-1) + tmp(x, y) + tmp(x, y+1))/3;
+  for (int y = 0; y < in.height(); y++) 
+    for (int x = 0; x < in.width(); x++) 
+      blurred(x, y) = (tmp(x, y-1)+tmp(x, y)+tmp(x, y+1))/3;
 }
 
 
@@ -70,34 +70,34 @@ void blur(const Image &in , Image &blurred) {
 
 ```cpp
 void fast_blur(const Image &in , Image &blurred) {
-    __m128i one_third = _mm_set1_epi16(21846);
-    #pragma omp parallel for
-    for (int yTile = 0; yTile < in.height(); yTile += 32){
-        __m128i a, b, c, sum, avg;
-        __m128i tmp[(256/8) * (32+2)];
-        for (int xTile = 0; xTile < in.width(); xTile += 256) {
-            __m128i *tmpPtr = tmp;
-            for (int y = -1; y < 32+1; y++) {
-                const uint16_t *inPtr = (const uint16_t*)&in(xTile, yTile + y);
-                for (int x = 0; x < 32; x += 8) {
-                    a = _mm_loadu_si128((__m128i*) (inPtr-1));
-                    b = _mm_loadu_si128((__m128i*) (inPtr+1));
-                    c = _mm_load_si128((__m128i*) (inPtr));
-                    sum = _mm_add_epi16(_mm_add_epi32(a, b), c);
-                    avg = _mm_mulhi_epi16(sum, one_third);
-                    _mm_store_si128(tmpPtr++, avg);
-                    inPtr += 8;
-                }}
-                tmpPtr = tmp;
-                for (int y = 0; y < 32; y++) {
-                    __m128i *outPtr = (__m128i *) (& (blurred(xTile, yTile+y)));
-                    for (int x = 0; x < 256; x += 8) {
-                        a = _mm_load_si128(tmpPtr+(2*256)/8);
-                        b = _mm_load_si128(tmpPtr+256/8);
-                        c = _mm_load_si128(tmpPtr++);
-                        sum = _mm_add_epi16(_mm_add_epi16(a, b), c);
-                        avg = _mm_mulhi_epi16(sum, one_third);
-                        _mm_store_si128(outPtr++, avg);
+  __m128i one_third = _mm_set1_epi16(21846);
+  #pragma omp parallel for
+  for (int yTile = 0; yTile < in.height(); yTile += 32){
+    __m128i a, b, c, sum, avg;
+    __m128i tmp[(256/8) * (32+2)];
+    for (int xTile = 0; xTile < in.width(); xTile += 256) {
+      __m128i *tmpPtr = tmp;
+      for (int y = -1; y < 32+1; y++) {
+        const uint16_t *inPtr = (const uint16_t*)&in(xTile, yTile + y);
+        for (int x = 0; x < 32; x += 8) {
+          a = _mm_loadu_si128((__m128i*) (inPtr-1));
+          b = _mm_loadu_si128((__m128i*) (inPtr+1));
+          c = _mm_load_si128((__m128i*) (inPtr));
+          sum = _mm_add_epi16(_mm_add_epi32(a, b), c);
+          avg = _mm_mulhi_epi16(sum, one_third);
+          _mm_store_si128(tmpPtr++, avg);
+          inPtr += 8;
+        }}
+        tmpPtr = tmp;
+        for (int y = 0; y < 32; y++) {
+          __m128i *outPtr = (__m128i *) (& (blurred(xTile, yTile+y)));
+          for (int x = 0; x < 256; x += 8) {
+            a = _mm_load_si128(tmpPtr+(2*256)/8);
+            b = _mm_load_si128(tmpPtr+256/8);
+            c = _mm_load_si128(tmpPtr++);
+            sum = _mm_add_epi16(_mm_add_epi16(a, b), c);
+            avg = _mm_mulhi_epi16(sum, one_third);
+            _mm_store_si128(outPtr++, avg);
 }}}}}
 ```
 
