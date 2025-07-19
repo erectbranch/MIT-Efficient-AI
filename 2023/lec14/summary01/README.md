@@ -8,107 +8,127 @@
 
 > [An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale 논문(2020)](https://arxiv.org/abs/2010.11929)
 
-**Vision Transformer**(ViT)는 2D image를 패치 단위로 나눈 token을 입력으로 사용하는 transformer이다.
+**Vision Transformer**(ViT)는 2D image를 패치 단위로 나눈 token을 입력으로 한다.
+
+![ViT](images/ViT_process.gif)
+
+- **tokenization**
 
 | 2D Image | | Tokenization |  
 | --- | :---: | --- | 
 | ![input patch](https://github.com/erectbranch/MIT-Efficient-AI/blob/master/2023/lec14/summary01/images/image_patches_1.png) | $\rightarrow$ | ![image tokens](https://github.com/erectbranch/MIT-Efficient-AI/blob/master/2023/lec14/summary01/images/image_patches_2.png) |
 | size: 96x96<br/>patch size: 32x32 | | \#tokens: 3x3=9<br/>dim of each token: 3x32x32=3,072 |
 
-다음은 ViT에서 이미지 입력을 분류하는 과정을 보여준다.
+- **linear projection**: 주로 convolution 활용 (서로 다른 패치에 대해 하나의 동일한 convolution) 
 
-![ViT](images/ViT_process.gif)
-
-이때 linear projection에서 convolution을 주로 활용한다. (서로 다른 패치에 대해 하나의 동일한 convolution 적용)
+| ![linear projection 1](https://github.com/erectbranch/MIT-Efficient-AI/blob/master/2023/lec14/summary01/images/linear_projection_1.png)| ![linear projection 2](https://github.com/erectbranch/MIT-Efficient-AI/blob/master/2023/lec14/summary01/images/linear_projection_2.png) |
+| --- | --- |
+| input dim = 3,072<br/>output dim(hidden size of ViT) = 768 | \#Parameters: 3,072x768 = 2.36M |
 
 > 현재 예시: "32x32 Filter, stride 32, padding 0, in_channel=3, output_channel = 768" convolution 레이어를 사용한다.
 
-| | |
-| --- | --- | 
-| ![linear projection 1](https://github.com/erectbranch/MIT-Efficient-AI/blob/master/2023/lec14/summary01/images/linear_projection_1.png)| ![linear projection 2](https://github.com/erectbranch/MIT-Efficient-AI/blob/master/2023/lec14/summary01/images/linear_projection_2.png) |
-| input dim = 3,072<br/>output dim(hidden size of ViT) = 768 | \#Parameters: 3,072x768 = 2.36M |
 
 ---
 
 ### 14.1.1 Model Variants
 
-논문에서는 세 가지 크기의 모델을 제안하였다.
-
-- Patch size: 2, 4, 8, 16, 32
+논문에서는 세 가지 ViT 모델군을 제안하였다. (Patch size: 2, 4, 8, 16, 32)
 
 ![ViT variants](images/vit_variants.png)
 
-> ViT-L/16 = ViT-Large, 16x16 패치 사용
+> (notation) ViT-L/16 = ViT-Large, 16x16 패치 사용
 
-다음은 ResNet과 ImageNet 정확도를 비교한 도표다. 많은 데이터를 사전학습한 ViT 모델일수록 (ResNet 대비) 우수한 정확도를 달성하였다.
+다음은 ImageNet 정확도를 비교한 도표다, 많은 양의 데이터(JFT-300M)로 사전학습한 경우, ResNet보다 우수한 정확도를 달성하였다.
 
 ![vit image classification results](images/vit_image_classification_result.png)
 
-> ViT-b: ViT-Base에서 hidden dimension을 절반으로 줄인 모델
+> (notation) ViT-b: ViT-Base에서 hidden dimension을 절반으로 줄인 모델
 
 ---
 
-## 14.2 High-Resolution Dense Prediction
+## 14.2 Challenge: High-Resolution Dense Prediction
 
-> **dense prediction**: 이미지 내 각 픽셀이 어느 클래스에 속하는지 예측
+> **dense prediction**: 이미지 내 각 픽셀이 어느 클래스인지 예측
 
-다음은 자율주행 task에서 저해상도(좌측), 고해상도(우측) 입력을 비교한 예시다.
+Computer Vision에서는 고해상도 입력이 필요한 다양한 도메인이 존재한다. (저해상도: 작은 물체와 같은 세부 정보를 인식하기 어렵다.)
 
-![autonomous driving](images/autonomous_driving.png)
-
-(고해상도 이미지에 비해) 저해상도 이미지는 작은 물체를 비롯한 디테일을 인식하기 어렵다.
-
----
-
-### 14.2.1 Applications: Semantic Segmentation, Super-Resolution
-
-다음은 high-resolution dense prediction의 대표적인 응용 예시다. 
+| low-res | high-res |
+| :---: | :---: |
+| ![autonomous driving low-res](images/autonomous_driving_1.png) | ![autonomous driving high-res](images/autonomous_driving_2.png) |
 
 | Medical Image Segmentation | Super-Resolution (SR) |
 | :---: | :---: |
 | ![medical image segmentation](images/medical_image_segmentation.png) | ![super-resolution](images/super-resolution.png) |
 
-하지만, ViT는 고해상도에서 연산량이 폭발적으로 증가하는 문제를 갖는다.
-
-- 해상도 증가 시, 연산량은 quadratic하게 증가한다.
+하지만, ViT는 고해상도에서 연산량이 폭발적으로 증가한다. (해상도 증가 $\rightarrow$ 연산량 **quadratic** 증가)
 
 ![res-macs](images/res_macs.png)
 
 ---
 
-### 14.2.2 Applications: Segment Anything
+### 14.2.1 Applications: Segment Anything
 
 > [Segment Anything 논문(2023)](https://arxiv.org/abs/2304.02643)
 
-**Segment Anything**은 Meta에서 공개한 image segmentation 모델이다. (**task**, **model**, **dataset**)
+> [SAM 2: Segment Anything in Images and Videos 논문(2024)](https://arxiv.org/abs/2408.00714): streaming memory 메커니즘을 도입하여 프레임 단위로 동영상 처리
 
-![segment anything](images/segment_anything.gif)
+> [SAM 3: Segment Anything with Concepts 논문(2025)](https://arxiv.org/abs/2511.16719): 특정 개념(concept) 프롬프트 전달 시, 관련 객체를 한번에 검출하고 ID 부여
 
-(zero-shot) image in-painting, object tracking, 3D generation 등 다양한 작업에서 우수한 성능을 달성하였다.
+**Segment Anything**은 이미지 인코더로 ViT를 채택한 image segmentation(이미지 분할) 모델이다. 
 
-> *SA-1B* dataset: 11M개 high-res image, 1B개 이상의 segmentation mask로 구성
+| Inference | Example |
+| :---: | :---: | 
+| ![segment anything](images/sam_resize.gif) | ![segment anything example](images/sam_prediction_cut.gif)
+
+> SAM 2: **streaming memory** 메커니즘을 도입하여, 프레임 단위로 동영상을 처리할 수 있다. (SA-V 데이터셋 학습, Hiera 이미지 인코더 활용)
+
+> 자체적으로 구성한 **SA-1B** 데이터셋으로 학습: 11M high-res image, 1B 개 이상의 segmentation mask
+>
+> ![SA-1B](images/SA-1B.png)
 
 ---
 
-#### 14.2.2.1 Segment Anything Model (SAM)
+### 14.2.1.1 SAM Architecture
 
-**Segment Anything Model**은 크게 세 가지 요소로 구성된다.
+> [On Efficient Variants of Segment Anything Model: A Survey 논문(2024)](https://arxiv.org/abs/2410.04960)
 
-**(1) image encoder**: 고해상도 입력에 최적화된 *MAE*(Masked Autoencoder) pre-trained ViT 활용
+> [Avishek Biswas, Segment Anything 2: What Is the Secret Sauce? (A Deep Learner’s Guide)](https://medium.com/data-science/segment-anything-2-what-is-the-secret-sauce-a-deep-learners-guide-1c43dd07a6f8)
 
-**(2) prompt encoder**: 두 종류의 prompt를 임베딩
+백본은 크게 3가지 요소로 구성되며, 지원하는 다양한 타입의 프롬프트(e.g., points, boxes, masks, text)에 따라서 이미지를 분할한다.
 
-- **sparse**(points, boxes, text)
+- **Image Encoder**: MAE(Masked Autoencoder) pre-trained **ViT**
 
-- **dense**(mask): convolution 활용
+- **Prompt Encoder**: **sparse**(points, boxes, text), **dense**(masks) 프롬프트 임베딩
 
-**(3) mask decoder**: 이미지 및 프롬프트 임베딩을 입력으로, segmentation mask 예측
+- **Mask Decoder**: 임베딩(image, prompt)에서 segmentation mask 예측
 
-![segment anything prediction](images/segment_anything_prediction.png)
+| Component | Description |
+| :---: | :---: |
+| **SAM 1** | ![SAM 1](images/sam1.png) |
+| **Mask Decoder**| ![mask decoder](images/sam_mask_decoder.png) |
+
+이때 Mask Decoder는 멀티모달 feature fusion을 위한 **cross-attention** 메커니즘을 사용한다. (segmentation mask, IoU 계산에서 활용)
+
+> SAM 2 Mask Decoder 추가 계산: **occlusion score**(프레임 내 query 객체 존재 여부), **object pointer**(mask token을 MLP로 벡터화)
+
+> **Notes**: SAM 2 Architecture
+>
+> - **Memory Encoder**: 출력 마스크를 Bank에 저장 (conv downsampling $\rightarrow$ 이미지 인코더 임베딩과 합산하여 저장)
+>
+> - **Memory Bank**: (1) 최근 $N$ 개 출력 마스크, (2) $M$ 개 프롬프트 임베딩, (3) object pointer 배열 저장
+>
+> - **Memory Attention**: 이미지 인코더 임베딩에 self-attention $\rightarrow$ 과거 메모리 뱅크 정보와 cross-attention
+>
+> ![SAM 2](images/sam2.png)
 
 ---
 
 ## 14.3 Efficient Attention
+
+SAM 사례에서 ViT(image encoder)는 파라미터 크기의 대부분을 차지(90% 이상)하며, 고해상도 입력에서 매우 큰 연산량을 요구한다. 
+
+- 따라서, 보다 경량화한 아키텍처나 효율적인 attention 메커니즘이 필요하다.
+
 
 ---
 
@@ -116,7 +136,7 @@
 
 > [Swin Transformer: Hierarchical Vision Transformer using Shifted Windows 논문(2021)](https://arxiv.org/abs/2103.14030)
 
-**Swin Transformer**은 local window 단위의 **window attention**을 설계하여 연산량을 최소화하였다. (연산 복잡도: linear하게 증가)
+**Swin Transformer**은 연산량을 최소화할 수 있는, local window 단위의 **window attention**을 제안하였다. (연산 복잡도: linear하게 증가)
 
 | Original Attention | Window Attention |
 | :---: | :---: |
@@ -141,15 +161,11 @@
 
 > [FlatFormer: Flattened Window Attention for Efficient Point Cloud Transformer 논문(2023)](https://arxiv.org/abs/2301.08739)
 
-3D Point Cloud 데이터는 일반적으로 99% 수준의 희소도를 가진다.
+**FlatFormer**는 희소도를 활용한 **Flattened Window Attention**(FWA) 설계를 제안하였다.
 
-![2d image vs 3d point cloud](images/2d_image_vs_3d_point_cloud.png)
+- **(1)** padding이 필요한 동일한 윈도우(Equal-Window) 대신, 동일한 크기(**Equal-Size**)로 그룹
 
-**FlatFormer**는 희소도를 활용한 가속을 위한 **Flattened Window Attention**(FWA) 설계를 제안하였다.
-
-**(1)** padding이 필요한 동일한 윈도우(Equal-Window) 대신, 동일한 크기(**Equal-Size**)로 그룹
-
-**(2)** 그룹별 self-attention(여러 axis로 수행) 및 shifted window attention 적용
+- **(2)** 그룹별 self-attention(여러 axis로 수행) 및 shifted window attention 적용
 
 || Equal-Window | Equal-Size |
 | :---: | :---: | :---: |
@@ -161,17 +177,19 @@
 
 ![FlatFormer FPS](images/FlatFormer_FPS.png)
 
+> **Notes**: 3D Point Cloud 데이터는 일반적으로 99% 수준의 희소도를 가진다.
+>
+> ![2d image vs 3d point cloud](images/2d_image_vs_3d_point_cloud.png)
+
 ---
 
 ## 14.4 EfficientViT: Linear Attention
 
 > [EfficientViT: Multi-Scale Linear Attention for High-Resolution Dense Prediction 논문(2022)](https://arxiv.org/abs/2205.14756)
 
-**EfficientViT**은 ReLU 기반의 **linear attention**을 도입하여 similarity 계산을 단순화한다. (수식의 오른쪽)
+**EfficientViT**은 ReLU 기반 **linear attention**으로 similarity 계산을 단순화한다. (연산 비용: $O(n)$ 으로 감소)
 
 $$ \mathrm{Sim}(Q,K) = \exp\left({ {QK^T} \over {\sqrt{d} } }\right) \rightarrow \mathrm{Sim}(Q,K) =  \mathrm{ReLU}(Q)\mathrm{ReLU}(K)^T $$
-
-연산 비용을 $O(n)$ 으로 줄일 수 있다.
 
 <table>
 <tr>
