@@ -1,7 +1,7 @@
 <div width="100%" height="100%" align="center">
   
 <h1 align="center">
-  <p align="center">TinyML and Efficient Deep Learning Computing</p>
+  <p align="center">TinyML and Efficient AI Computing</p>
 </h1>
 
 <b>MIT 6.S965/6.5940 • Fall • 2022-2024, 2026</b>
